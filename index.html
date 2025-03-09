@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Honey 3D Experience</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
+            background: #ffffff;
+            min-height: 200vh;
+            transition: background 1.5s ease-in-out;
+        }
+        .content { position: relative; height: 200vh; }
+        .intro {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px;
+            box-sizing: border-box;
+            color: #333;
+            position: relative;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .intro h1 { 
+            font-size: 6em; 
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease; 
+        }
+        .intro h1:hover { transform: scale(1.05); }
+        .canvas-container {
+            height: 100vh;
+            width: 100%;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .canvas-container.visible { opacity: 1; }
+        canvas { width: 100%; height: 100%; }
+        .arrow {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+        .arrow.visible { opacity: 1; }
+        .arrow:hover { 
+            background: #fff; 
+            transform: scale(1.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+        }
+        .arrow-up { top: 20px; left: 50%; transform: translateX(-50%); }
+        .arrow-down { bottom: 20px; left: 50%; transform: translateX(-50%); }
+        .arrow-left { left: 20px; top: 50%; transform: translateY(-50%); }
+        .arrow-right { right: 20px; top: 50%; transform: translateY(-50%); }
+        .arrow img { 
+            width: 48px; 
+            height: 48px; 
+            transition: transform 0.3s ease; 
+        }
+        .arrow:hover img { transform: rotate(10deg); }
+        .price-container {
+            position: absolute;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .price-container.visible { opacity: 1; }
+        .price {
+            font-size: 3em;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: inline-block;
+            transform: scale(0);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        .price.visible { transform: scale(1); }
+        .cart-icon {
+            font-size: 3em;
+            color: #fff;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .cart-icon:hover { 
+            color: #FFD700; 
+            transform: scale(1.2); 
+        }
+        .cart-icon::after {
+            content: 'Add to Cart';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.5em;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+        }
+        .cart-icon:hover::after { opacity: 1; }
+        .logo {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            width: 200px;
+            height: auto;
+            z-index: 2;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .logo:hover { transform: scale(1.1); }
+        @media (max-width: 768px) {
+            .intro h1 { font-size: 4em; }
+            .arrow { width: 60px; height: 60px; }
+            .arrow img { width: 36px; height: 36px; }
+            .price { font-size: 2em; padding: 8px 16px; }
+            .cart-icon { font-size: 2em; margin-top: 15px; }
+            .logo { width: 150px; top: 20px; left: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <section class="intro" id="intro">
+            <img src="./assets/logo.svg" alt="Honey Logo" class="logo" onclick="document.getElementById('intro').scrollIntoView({ behavior: 'smooth' })">
+            <h1>Scroll Down to Explore Our Honey</h1>
+        </section>
+        <div class="canvas-container" id="canvas-container">
+            <button class="arrow arrow-up" id="arrow-up">
+                <img src="./assets/arrow-up.svg" alt="Up">
+            </button>
+            <button class="arrow arrow-down" id="arrow-down">
+                <img src="./assets/arrow-down.svg" alt="Down">
+            </button>
+            <button class="arrow arrow-left" id="arrow-left">
+                <img src="./assets/arrow-left.svg" alt="Left">
+            </button>
+            <button class="arrow arrow-right" id="arrow-right">
+                <img src="./assets/arrow-right.svg" alt="Right">
+            </button>
+            <div class="price-container" id="price-container">
+                <div class="price" id="price"></div>
+                <div class="cart-icon" id="cart-icon">🛒</div>
+            </div>
+        </div>
+    </div>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+    <script type="module" src="script.js"></script>
+</body>
+</html>
